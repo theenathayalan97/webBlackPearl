@@ -1,0 +1,34 @@
+// Login.scss
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("../images/traffic.jpg");
+  background-size: cover;
+  background-position: center;
+
+  .logo-box {
+    height: 100px;
+    width: 100px;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    height: 300px;
+  }
+  .input-field {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+
+  .login-button {
+    width: 100%;
+  }
+}

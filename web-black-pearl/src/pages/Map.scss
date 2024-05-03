@@ -1,0 +1,22 @@
+.drawer{
+    .css-1160xiw-MuiPaper-root-MuiDrawer-paper{
+        width:300px ;
+    }
+    .submit-button {
+  background-color: darkblue;
+  color: white;
+
+  &:hover {
+    background-color: #001f3f; // Darken the color on hover
+  }
+}
+
+.logout-button {
+  background-color: red;
+  color: white;
+
+  &:hover {
+    background-color: #8b0000; // Darken the color on hover
+  }
+}
+}
