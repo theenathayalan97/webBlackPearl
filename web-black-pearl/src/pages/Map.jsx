@@ -309,7 +309,7 @@ function Map() {
     horizontal: "right",
   });
 
-  const [travel, setTravel] = useState(true);
+  const [path, setPath] = useState(false);
 
   const navigate = useNavigate();
 
@@ -338,19 +338,19 @@ function Map() {
     });
     setDestination([12.9517, 80.1402]);
 
-    const interval = setInterval(() => {
-      setTripPath((prevTripPath) => {
-        const updatedTripPath = [...prevTripPath.slice(1), prevTripPath[0]];
-        setCurrentLocation({
-          latitude: updatedTripPath[0][0],
-          longitude: updatedTripPath[0][1],
-        });
-        return updatedTripPath;
-      });
-    }, 7000);
+    // const intervalId = setInterval(() => {
+    //   setTripPath((prevTripPath) => {
+    //     const updatedTripPath = [...prevTripPath.slice(1), prevTripPath[0]];
+    //     setCurrentLocation({
+    //       latitude: updatedTripPath[0][0],
+    //       longitude: updatedTripPath[0][1],
+    //     });
+    //     return updatedTripPath;
+    //   });
+    // }, 7000);
 
-    return () => clearInterval(interval);
-  }, []);
+    // return () => clearInterval(intervalId);
+  }, [source]);
 
   useEffect(() => {
     if (currentLocation && destination) {
@@ -379,7 +379,8 @@ function Map() {
       tripPath.forEach((coords, index) => {
         if (
           Math.abs(coords[0] - currentLocation.latitude) < 0.0001 &&
-          Math.abs(coords[1] - currentLocation.longitude) < 0.0001
+          Math.abs(coords[1] - currentLocation.longitude) < 0.0001 &&
+          path
         ) {
           setSnackbarMessage(`Signal is nearby`);
           setSnackbarOpen(true);
@@ -391,11 +392,24 @@ function Map() {
   const handleSubmit = () => {
     // Handle form submission logic here
 
-    setVehicleNumber(vehicleNumber);
-    setSource(source);
-    setDestinationAddress(destinationAddress);
+    // setVehicleNumber(vehicleNumber);
+    // setSource(source);
+    // setDestinationAddress(destinationAddress);
 
+    setPath(true);
     if (vehicleNumber && source && destinationAddress) setDrawerOpen(false);
+    const intervalId = setInterval(() => {
+      setTripPath((prevTripPath) => {
+        const updatedTripPath = [...prevTripPath.slice(1), prevTripPath[0]];
+        setCurrentLocation({
+          latitude: updatedTripPath[0][0],
+          longitude: updatedTripPath[0][1],
+        });
+        return updatedTripPath;
+      });
+    }, 7000);
+
+    return () => clearInterval(intervalId);
   };
 
   return (
@@ -428,23 +442,35 @@ function Map() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {/* Render the trip path polyline */}
-            <Polyline positions={routeGeometry} color="blue" />
+            {/* {source && <Polyline positions={routeGeometry} color="blue" />}
 
             {tripPath.map((coords, index) => (
               <Marker key={index} position={coords} icon={cameraIcon}>
                 <Popup>{`Marker ${index + 1}`}</Popup>
               </Marker>
-            ))}
+            ))} */}
 
-            <Marker
-              position={[currentLocation.latitude, currentLocation.longitude]}
-            >
-              <Popup>Source</Popup>
-            </Marker>
-            <Marker position={destination}>
-              <Popup>Destination</Popup>
-            </Marker>
+            {path && (
+              <>
+                <Polyline positions={routeGeometry} color="blue" />
+                {tripPath.map((coords, index) => (
+                  <Marker key={index} position={coords} icon={cameraIcon}>
+                    <Popup>{`Marker ${index + 1}`}</Popup>
+                  </Marker>
+                ))}
+                <Marker
+                  position={[
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                  ]}
+                >
+                  <Popup>Source</Popup>
+                </Marker>
+                <Marker position={destination}>
+                  <Popup>Destination</Popup>
+                </Marker>
+              </>
+            )}
           </MapContainer>
 
           <Drawer
@@ -469,7 +495,7 @@ function Map() {
                 fullWidth
                 value={vehicleNumber}
                 onChange={(e) => setVehicleNumber(e.target.value)}
-                sx={{ mb: 2 }} // Set width of text field
+                sx={{ mb: 2 }}
               />
               <TextField
                 label="Source"
@@ -478,7 +504,7 @@ function Map() {
                 fullWidth
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
-                sx={{ mb: 2 }} // Set width of text field
+                sx={{ mb: 2 }}
               />
               <TextField
                 label="Destination"
@@ -487,7 +513,7 @@ function Map() {
                 fullWidth
                 value={destinationAddress}
                 onChange={(e) => setDestinationAddress(e.target.value)}
-                sx={{ mb: 2 }} // Set width of text field
+                sx={{ mb: 2 }}
               />
               <Box display={"flex"} gap={"20px"}>
                 <Button
